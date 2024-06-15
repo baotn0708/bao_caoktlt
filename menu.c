@@ -11,7 +11,7 @@
 char function[100]; // global variable to store the function
 
 void print_menu(int highlight) {
-    char *menu[] = {"Nhap f(x)", "Tinh f(x) tai 1 diem", "Lap bang gia tri f(x) tren mot doan(nhap hai dau mut tu ban phim)", "Tinh gan dung tich phan voi sai so cho truoc(mac dinh e<1e-4)", "Thoat chuong trinh"};
+    char *menu[] = {"Nhap f(x)", "Tinh f(x) tai 1 diem", "Tinh gan dung tich phan voi sai so cho truoc(mac dinh e<1e-4)", "Thoat chuong trinh"};
     int num_choices = sizeof(menu) / sizeof(char *);
 
     // Clear screen

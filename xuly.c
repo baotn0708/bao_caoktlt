@@ -73,10 +73,96 @@ void print_polynomial_table(char *polynomial, double a, double b, double h) {
     }
     printf("\n");
 }
+double trapezoidal_rule(double a, double b, double *x_values, double *y_values, int n) {
+    double h = (b - a) / n;
+    double s = y_values[0] + y_values[n];
 
+    for (int i = 1; i < n; i++) {
+        s += 2 * y_values[i];
+    }
+
+    return (h / 2) * s;
+}
+double simpson_rule(double a, double b, double *x_values, double *y_values, int n) {
+    double h = (b - a) / n;
+    double s = y_values[0] + y_values[n];
+
+    for (int i = 1; i < n; i++) {
+        if (i % 2 == 0) {
+            s += 2 * y_values[i];
+        } else {
+            s += 4 * y_values[i];
+        }
+    }
+
+    return (h / 3) * s;
+}
+double integrate_trap(double a, double b, double epsilon, char* function){
+    int num_points = 3;  // number of points
+    double *x_values = malloc(num_points * sizeof(double));
+    double *y_values = malloc(num_points * sizeof(double));
+    
+    double step = (b - a) / (num_points - 1);  // calculate the step size
+    
+    for (int i = 0; i < num_points; i++) {
+        x_values[i] = a + i * step;  // calculate the x values
+        y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+    }
+    
+    double result=-1, old_result;
+    do{
+        old_result = result;
+        x_values = realloc(x_values, num_points * sizeof(double));
+        y_values = realloc(y_values, num_points * sizeof(double));
+        step = (b - a) / (num_points - 1);  // calculate the step size
+        for (int i = 0; i < num_points; i++) {
+            x_values[i] = a + i * step;  // calculate the x values
+            y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+        }
+        result = trapezoidal_rule(a, b, x_values, y_values, num_points);
+        num_points *= 2;
+    }while (fabs(result - old_result) > epsilon);
+
+    free(x_values);
+    free(y_values);
+
+    return result;
+
+}
+double integrate_simp(double a, double b, double epsilon, char* function){
+    int num_points = 3;  // number of points
+    double *x_values = malloc(num_points * sizeof(double));
+    double *y_values = malloc(num_points * sizeof(double));
+    
+    double step = (b - a) / (num_points - 1);  // calculate the step size
+    
+    for (int i = 0; i < num_points; i++) {
+        x_values[i] = a + i * step;  // calculate the x values
+        y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+    }
+    
+    double result=-1, old_result;
+    do{
+        old_result = result;
+        x_values = realloc(x_values, num_points * sizeof(double));
+        y_values = realloc(y_values, num_points * sizeof(double));
+        step = (b - a) / (num_points - 1);  // calculate the step size
+        for (int i = 0; i < num_points; i++) {
+            x_values[i] = a + i * step;  // calculate the x values
+            y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+        }
+        result = simpson_rule(a, b, x_values, y_values, num_points);
+        num_points *= 2;
+    }while (fabs(result - old_result) > epsilon);
+
+    free(x_values);
+    free(y_values);
+
+    return result;
+}
 // int main() {
 //     char polynomial[MAX_SIZE];
-//     double x0, a, b, h;
+//     double a, b, epsilon;
 
 //     printf("Enter a polynomial: ");
 //     fgets(polynomial, MAX_SIZE, stdin);
@@ -90,11 +176,75 @@ void print_polynomial_table(char *polynomial, double a, double b, double h) {
 
 //     printf("Enter the upper limit (b): ");
 //     scanf("%lf", &b);
+//     printf("Enter epsilon:");
+//     scanf("%lf", &epsilon);
 
-//     printf("Enter the step size (h): ");
-//     scanf("%lf", &h);
-
-//     print_polynomial_table(polynomial, a, b, h); // Print the table
+//     printf("Integrate poly [%6.2lf, %6.2lf]: %6.2lf", a, b, integrate(a, b, epsilon, polynomial));
 
 //     return 0;
+// }
+// double integrate_trap(double (*f)(double), double a, double b, double epsilon) {
+//     int num_points = 3;  // number of points
+//     double *x_values = malloc(num_points * sizeof(double));
+//     double *y_values = malloc(num_points * sizeof(double));
+    
+//     double step = (b - a) / (num_points - 1);  // calculate the step size
+    
+//     for (int i = 0; i < num_points; i++) {
+//         x_values[i] = a + i * step;  // calculate the x values
+//         y_values[i] = f(x_values[i]);  // calculate the y values
+//     }
+    
+//     double result=-1, old_result;
+//     do{
+//         old_result = result;
+//         x_values = realloc(x_values, num_points * sizeof(double));
+//         y_values = realloc(y_values, num_points * sizeof(double));
+//         step = (b - a) / (num_points - 1);  // calculate the step size
+//         for (int i = 0; i < num_points; i++) {
+//             x_values[i] = a + i * step;  // calculate the x values
+//             y_values[i] = f(x_values[i]);  // calculate the y values
+//         }
+//         result = trapezoidal_rule(a, b, x_values, y_values, num_points);
+//         num_points *= 2;
+//     }while (fabs(result - old_result) > epsilon);
+
+//     free(x_values);
+//     free(y_values);
+
+//     return result;
+// }
+// double integrate_simp(double (*f)(double), double a, double b, double epsilon) {
+//     int num_points = 3;  // number of points
+//     double *x_values = malloc(num_points * sizeof(double));
+//     double *y_values = malloc(num_points * sizeof(double));
+    
+//     double step = (b - a) / (num_points - 1);  // calculate the step size
+    
+//     for (int i = 0; i < num_points; i++) {
+//         x_values[i] = a + i * step;  // calculate the x values
+//         y_values[i] = f(x_values[i]);  // calculate the y values
+//     }
+    
+//     double result=-1, old_result;
+//     do{
+//         old_result = result;
+//         x_values = realloc(x_values, num_points * sizeof(double));
+//         y_values = realloc(y_values, num_points * sizeof(double));
+//         step = (b - a) / (num_points - 1);  // calculate the step size
+//         for (int i = 0; i < num_points; i++) {
+//             x_values[i] = a + i * step;  // calculate the x values
+//             y_values[i] = f(x_values[i]);  // calculate the y values
+//         }
+//         result = simpson_rule(a, b, x_values, y_values, num_points);
+//         num_points *= 2;
+//     }while (fabs(result - old_result) > epsilon);
+
+//     free(x_values);
+//     free(y_values);
+
+//     return result;
+// }
+// double f(double x){
+//     return x*x;
 // }
