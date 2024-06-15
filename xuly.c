@@ -97,7 +97,7 @@ double simpson_rule(double a, double b, double *x_values, double *y_values, int 
 
     return (h / 3) * s;
 }
-double integrate_trap(double a, double b, double epsilon, char* function){
+double integrate_trap(double a, double b, double epsilon, char* poly){
     int num_points = 3;  // number of points
     double *x_values = malloc(num_points * sizeof(double));
     double *y_values = malloc(num_points * sizeof(double));
@@ -106,7 +106,7 @@ double integrate_trap(double a, double b, double epsilon, char* function){
     
     for (int i = 0; i < num_points; i++) {
         x_values[i] = a + i * step;  // calculate the x values
-        y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+        y_values[i] = calculate_polynomial(poly ,x_values[i]);  // calculate the y values
     }
     
     double result=-1, old_result;
@@ -117,12 +117,12 @@ double integrate_trap(double a, double b, double epsilon, char* function){
         step = (b - a) / (num_points - 1);  // calculate the step size
         for (int i = 0; i < num_points; i++) {
             x_values[i] = a + i * step;  // calculate the x values
-            y_values[i] = calculate_polynomial(function ,x_values[i]);  // calculate the y values
+            y_values[i] = calculate_polynomial(poly ,x_values[i]);  // calculate the y values
         }
         result = trapezoidal_rule(a, b, x_values, y_values, num_points);
         num_points *= 2;
     }while (fabs(result - old_result) > epsilon);
-
+    print_polynomial_table(poly, a, b, (b-a)/(num_points-1) );
     free(x_values);
     free(y_values);
 
