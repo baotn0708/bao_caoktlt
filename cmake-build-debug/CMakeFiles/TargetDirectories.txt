@@ -1,0 +1,3 @@
+/home/bvth2020/bao_caoktlt/cmake-build-debug/CMakeFiles/bao_caoktlt.dir
+/home/bvth2020/bao_caoktlt/cmake-build-debug/CMakeFiles/edit_cache.dir
+/home/bvth2020/bao_caoktlt/cmake-build-debug/CMakeFiles/rebuild_cache.dir

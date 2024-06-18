@@ -1,4 +1,5 @@
-#include <stdio.h>
+// #include <stdio.h>
+#include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
@@ -57,21 +58,48 @@ double calculate_polynomial(char *polynomial, double x0) {
     return result;
 }
 
-
 void print_polynomial_table(char *polynomial, double a, double b, double h) {
-    // Print the header of the table
-    printf("%-7s","x: ");
-    for (double i = a; i <= b + h/2; i += h) {
-        printf("%6.2lf", i); // Print the value of x with a fixed width of 6 characters
-    }
-    printf("\n");
+    int total_points = (int)round((b - a) / h) + 1;
 
-    printf("%-7s","f(x): ");
-    for (double i = a; i <= b + h/2; i += h) {
-        double result = calculate_polynomial(polynomial, i);
-        printf("%6.2lf", result); // Print the value of f(x) with a fixed width of 6 characters
+    // Print the header of the table
+    printw("%-7s","x: ");
+    if (total_points <= 6) {
+        for (double i = a; i <= b + h/2; i += h) {
+            printw("%6.2lf", i);
+        }
+    } else {
+        double i = a;
+        for (int j = 0; j < 3; j++, i += h) {
+            printw("%6.2lf", i);
+        }
+        printw("...");
+        i = b - 2 * h;
+        for (int j = 0; j < 3; j++, i += h) {
+            printw("%6.2lf", i);
+        }
     }
-    printf("\n");
+    printw("\n");
+
+    printw("%-7s","f(x): ");
+    if (total_points <= 6) {
+        for (double i = a; i <= b + h/2; i += h) {
+            double result = calculate_polynomial(polynomial, i);
+            printw("%6.2lf", result);
+        }
+    } else {
+        double i = a;
+        for (int j = 0; j < 3; j++, i += h) {
+            double result = calculate_polynomial(polynomial, i);
+            printw("%6.2lf", result);
+        }
+        printw("...");
+        i = b - 2 * h;
+        for (int j = 0; j < 3; j++, i += h) {
+            double result = calculate_polynomial(polynomial, i);
+            printw("%6.2lf", result);
+        }
+    }
+    printw("\n");
 }
 double trapezoidal_rule(double a, double b, double *x_values, double *y_values, int n) {
     double h = (b - a) / n;
@@ -122,9 +150,10 @@ double integrate_trap(double a, double b, double epsilon, char* poly){
         result = trapezoidal_rule(a, b, x_values, y_values, num_points);
         num_points *= 2;
     }while (fabs(result - old_result) > epsilon);
-    print_polynomial_table(poly, a, b, (b-a)/(num_points-1) );
+    // print_polynomial_table(poly, a, b, (b-a)/(num_points-1) );
     free(x_values);
     free(y_values);
+    print_polynomial_table(poly, a, b, (b-a)/(num_points-1));
 
     return result;
 
@@ -164,22 +193,22 @@ double integrate_simp(double a, double b, double epsilon, char* function){
 //     char polynomial[MAX_SIZE];
 //     double a, b, epsilon;
 
-//     printf("Enter a polynomial: ");
+//     printw("Enter a polynomial: ");
 //     fgets(polynomial, MAX_SIZE, stdin);
 //     polynomial[strcspn(polynomial, "\n")] = 0;  // remove trailing newline
 
-//     // printf("Enter the value of x0: ");
+//     // printw("Enter the value of x0: ");
 //     // scanf("%lf", &x0);
 
-//     printf("Enter the lower limit (a): ");
+//     printw("Enter the lower limit (a): ");
 //     scanf("%lf", &a);
 
-//     printf("Enter the upper limit (b): ");
+//     printw("Enter the upper limit (b): ");
 //     scanf("%lf", &b);
-//     printf("Enter epsilon:");
+//     printw("Enter epsilon:");
 //     scanf("%lf", &epsilon);
 
-//     printf("Integrate poly [%6.2lf, %6.2lf]: %6.2lf", a, b, integrate(a, b, epsilon, polynomial));
+//     printw("Integrate poly [%6.2lf, %6.2lf]: %6.2lf", a, b, integrate(a, b, epsilon, polynomial));
 
 //     return 0;
 // }

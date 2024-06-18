@@ -5,6 +5,7 @@
         "fcntl.h": "c",
         "termios.h": "c",
         "menu.h": "c",
-        "math.h": "c"
+        "math.h": "c",
+        "ncurses.h": "c"
     }
 }
