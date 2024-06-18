@@ -1,6 +1,10 @@
 #include <stdio.h>
-#include<math.h>
-#include<stdlib.h>
+#include <math.h>
+#include <stdlib.h>
+#include "xuly.h"
+
+#define var_count 1
+
 double trapezoidal_rule(double a, double b, double *x_values, double *y_values, int n) {
     double h = (b - a) / n;
     double s = y_values[0] + y_values[n];
@@ -25,66 +29,77 @@ double simpson_rule(double a, double b, double *x_values, double *y_values, int 
 
     return (h / 3) * s;
 }
-double f(double x ){
-    return x*x;
-}
 
-double integrate_trap(double (*f)(double), double a, double b, double epsilon) {
-    int num_points = 3;  // number of points
+double integrate_trap(double a, double b, double epsilon, const char* func) {
+    int num_points = 3;  // số điểm ban đầu
     double *x_values = malloc(num_points * sizeof(double));
     double *y_values = malloc(num_points * sizeof(double));
     
-    double step = (b - a) / (num_points - 1);  // calculate the step size
+    double step = (b - a) / (num_points - 1);  // tính kích thước bước
+    
+    double x0 = 0;
+    variable vars[] = {{"x", &x0}};
     
     for (int i = 0; i < num_points; i++) {
-        x_values[i] = a + i * step;  // calculate the x values
-        y_values[i] = f(x_values[i]);  // calculate the y values
+        x_values[i] = a + i * step;  // tính các giá trị x
+        x0 = x_values[i];
+        const char* func_copy = func;
+        y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
     }
-    
-    double result=-1, old_result;
-    do{
+    double result = trapezoidal_rule(a, b, x_values, y_values, num_points);
+    double old_result;
+    do {
         old_result = result;
+        num_points *= 2;
         x_values = realloc(x_values, num_points * sizeof(double));
         y_values = realloc(y_values, num_points * sizeof(double));
-        step = (b - a) / (num_points - 1);  // calculate the step size
+        step = (b - a) / (num_points - 1);  // tính lại kích thước bước
         for (int i = 0; i < num_points; i++) {
-            x_values[i] = a + i * step;  // calculate the x values
-            y_values[i] = f(x_values[i]);  // calculate the y values
+            x_values[i] = a + i * step;  // tính các giá trị x
+            x0 = x_values[i];
+            const char* func_copy = func;
+            y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
         }
         result = trapezoidal_rule(a, b, x_values, y_values, num_points);
-        num_points *= 2;
-    }while (fabs(result - old_result) > epsilon);
+    } while (fabs(result - old_result) > epsilon);
 
     free(x_values);
     free(y_values);
-
+    
     return result;
 }
-double integrate_simp(double (*f)(double), double a, double b, double epsilon) {
-    int num_points = 3;  // number of points
+double integrate_simp(double a, double b, double epsilon, const char* func) {
+    int num_points = 3;  // số điểm ban đầu
     double *x_values = malloc(num_points * sizeof(double));
     double *y_values = malloc(num_points * sizeof(double));
     
-    double step = (b - a) / (num_points - 1);  // calculate the step size
+    double step = (b - a) / (num_points - 1);  // tính kích thước bước
+    
+    double x0 = 0;
+    variable vars[] = {{"x", &x0}};
     
     for (int i = 0; i < num_points; i++) {
-        x_values[i] = a + i * step;  // calculate the x values
-        y_values[i] = f(x_values[i]);  // calculate the y values
+        x_values[i] = a + i * step;  // tính các giá trị x
+        x0 = x_values[i];
+        const char* func_copy = func;
+        y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
     }
-    
-    double result=-1, old_result;
-    do{
+    double result = simpson_rule(a, b, x_values, y_values, num_points);
+    double old_result;
+    do {
         old_result = result;
+        num_points *= 2;
         x_values = realloc(x_values, num_points * sizeof(double));
         y_values = realloc(y_values, num_points * sizeof(double));
-        step = (b - a) / (num_points - 1);  // calculate the step size
+        step = (b - a) / (num_points - 1);  // tính lại kích thước bước
         for (int i = 0; i < num_points; i++) {
-            x_values[i] = a + i * step;  // calculate the x values
-            y_values[i] = f(x_values[i]);  // calculate the y values
+            x_values[i] = a + i * step;  // tính các giá trị x
+            x0 = x_values[i];
+            const char* func_copy = func;
+            y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
         }
         result = simpson_rule(a, b, x_values, y_values, num_points);
-        num_points *= 2;
-    }while (fabs(result - old_result) > epsilon);
+    } while (fabs(result - old_result) > epsilon);
 
     free(x_values);
     free(y_values);
@@ -92,15 +107,27 @@ double integrate_simp(double (*f)(double), double a, double b, double epsilon) {
     return result;
 }
 
-// int main() {
-//     double a = 0;  // start value
-//     double b = 1;  // end value
-//     double epsilon = .01;  // epsilon value
-//     printf("Tích phân gần đúng của hàm f(x) trên đoạn [%.2lf, %.2lf] là: %.2lf\n", a, b, integrate(f, a, b, epsilon));
-//     // printf("%lf\n", y_values[(num_points-1)/2]);
-//     // result = simpson_rule(a, b, x_values, y_values, (num_points-1)/2);
-//     // printf("Tích phân gần đúng của hàm f(x) trên đoạn [%.2lf, %.2lf] là: %.2lf\n", a, b, result);
-//     // free(x_values);
-//     // free(y_values);
+// int main()
+// {
+//     char expr[100];
+//     double a, b, e;
+
+//     // Nhập giá trị a, b, epsilon từ bàn phím
+//     printf("Nhập giá trị a: ");
+//     scanf("%lf", &a);
+//     printf("Nhập giá trị b: ");
+//     scanf("%lf", &b);
+//     printf("Nhập giá trị epsilon: ");
+//     scanf("%lf", &e);
+
+//     // Nhập biểu thức hàm từ bàn phím
+//     printf("Nhập biểu thức hàm f(x): ");
+//     scanf("%s", expr);
+//     const char *expression = expr;
+
+//     double result = integrate_simp(a, b, e, expression);
+
+//     printf("Tích phân của f(x) trên [%f, %f] là: %lf\n", a, b, result);
+
 //     return 0;
 // }

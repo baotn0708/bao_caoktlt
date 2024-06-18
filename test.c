@@ -1,68 +1,119 @@
-#include <ncurses.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <math.h>
+#include <string.h>
+#include <ctype.h>
 
-char *menu[] = {"Option 1", "Option 2", "Option 3", "Exit"};
-int num_choices = sizeof(menu) / sizeof(char *);
+typedef struct {
+    const char *name;
+    double *address;
+} variable;
 
-void print_menu(WINDOW *menu_win, int highlight) {
-    int x, y, i;
+double parse_expression(const char **expression, variable *vars, int var_count);
+double parse_term(const char **expression, variable *vars, int var_count);
+double parse_factor(const char **expression, variable *vars, int var_count);
+double parse_primary(const char **expression, variable *vars, int var_count);
+double evaluate_function(const char *name, double arg);
+double evaluate_variable(const char *name, variable *vars, int var_count);
 
-    x = 2;
-    y = 2;
-    box(menu_win, 0, 0);
-    for(i = 0; i < num_choices; ++i) {
-        if(highlight == i + 1) {
-            wattron(menu_win, A_REVERSE);
-            mvwprintw(menu_win, y, x, "%s", menu[i]);
-            wattroff(menu_win, A_REVERSE);
-        }
-        else
-            mvwprintw(menu_win, y, x, "%s", menu[i]);
-        ++y;
+double parse_expression(const char **expression, variable *vars, int var_count) {
+    double result = parse_term(expression, vars, var_count);
+    while (**expression == '+' || **expression == '-') {
+        char op = **expression;
+        (*expression)++;
+        double term = parse_term(expression, vars, var_count);
+        if (op == '+') result += term;
+        else result -= term;
     }
-    wrefresh(menu_win);
+    return result;
+}
+
+double parse_term(const char **expression, variable *vars, int var_count) {
+    double result = parse_factor(expression, vars, var_count);
+    while (**expression == '*' || **expression == '/') {
+        char op = **expression;
+        (*expression)++;
+        double factor = parse_factor(expression, vars, var_count);
+        if (op == '*') result *= factor;
+        else result /= factor;
+    }
+    return result;
+}
+
+double parse_factor(const char **expression, variable *vars, int var_count) {
+    double result = parse_primary(expression, vars, var_count);
+    while (**expression == '^') {
+        (*expression)++;
+        double exponent = parse_primary(expression, vars, var_count);
+        result = pow(result, exponent);
+    }
+    return result;
+}
+
+double parse_primary(const char **expression, variable *vars, int var_count) {
+    double result;
+    if (**expression == '(') {
+        (*expression)++;
+        result = parse_expression(expression, vars, var_count);
+        if (**expression == ')') (*expression)++;
+    } else if (isalpha(**expression)) {
+        const char *start = *expression;
+        while (isalnum(**expression)) (*expression)++;
+        char name[100];
+        strncpy(name, start, *expression - start);
+        name[*expression - start] = '\0';
+        if (**expression == '(') {
+            (*expression)++;
+            double arg = parse_expression(expression, vars, var_count);
+            if (**expression == ')') (*expression)++;
+            result = evaluate_function(name, arg);
+        } else {
+            result = evaluate_variable(name, vars, var_count);
+        }
+    } else {
+        char *end;
+        result = strtod(*expression, &end);
+        *expression = end;
+    }
+    return result;
+}
+
+double evaluate_function(const char *name, double arg) {
+    if (strcmp(name, "sin") == 0) return sin(arg);
+    if (strcmp(name, "cos") == 0) return cos(arg);
+    if (strcmp(name, "tan") == 0) return tan(arg);
+    if (strcmp(name, "log") == 0) return log(arg);
+    if (strcmp(name, "exp") == 0) return exp(arg);
+    if (strcmp(name, "sqrt") == 0) return sqrt(arg);
+    return 0.0; // Hàm không xác định
+}
+
+double evaluate_variable(const char *name, variable *vars, int var_count) {
+    for (int i = 0; i < var_count; i++) {
+        if (strcmp(name, vars[i].name) == 0) {
+            return *(vars[i].address);
+        }
+    }
+    return 0.0; // Biến không xác định
 }
 
 int main() {
-    WINDOW *menu_win;
-    int highlight = 1;
-    int choice = 0;
-    int c;
+    char expr[100];
+    double x0;
 
-    initscr();
-    clear();
-    noecho();
-    cbreak();	// Line buffering disabled. pass on everything
-    menu_win = newwin(num_choices + 4, 20, 2, 2);
-    keypad(menu_win, TRUE);
-    mvprintw(0, 0, "Use arrow keys to go up and down, Press enter to select a choice");
-    refresh();
-    print_menu(menu_win, highlight);
-    while(1) {
-        c = wgetch(menu_win);
-        switch(c) {
-        case KEY_UP:
-            if(highlight == 1)
-                highlight = num_choices;
-            else
-                --highlight;
-            break;
-        case KEY_DOWN:
-            if(highlight == num_choices)
-                highlight = 1;
-            else
-                ++highlight;
-            break;
-        case 10:
-            choice = highlight;
-            break;
-        }
-        print_menu(menu_win, highlight);
-        if(choice != 0)	// User did a choice come out of the infinite loop
-            break;
-    }
-    mvprintw(num_choices + 5, 0, "You chose choice %d with choice string %s\n", choice, menu[choice - 1]);
-    clrtoeol();
-    refresh();
-    endwin();
+    // Nhập giá trị x0 từ bàn phím
+    printf("Nhập giá trị x0: ");
+    scanf("%lf", &x0);
+
+    // Nhập biểu thức hàm từ bàn phím
+    printf("Nhập biểu thức hàm f(x): ");
+    scanf("%s", expr);
+
+    variable vars[] = {{"x", &x0}};
+    const char *expression = expr;
+    double result = parse_expression(&expression, vars, 1);
+
+    printf("f(%lf) = %lf\n", x0, result);
+
     return 0;
 }

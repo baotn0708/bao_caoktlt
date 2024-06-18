@@ -1,10 +1,16 @@
 #ifndef XULY_H
 #define XULY_H
 
-double calculate_polynomial(char *polynomial, double x0);
-void print_polynomial_table(char *polynomial, double a, double b, double h);
-double trapezoidal_rule(double a, double b, double *x_values, double *y_values, int n);
-double simpson_rule(double a, double b, double *x_values, double *y_values, int n);
-double integrate_trap(double a, double b, double epsilon, char* function);
-double integrate_simp(double a, double b, double epsilon, char* function);
+typedef struct {
+    const char *name;
+    double *address;
+} variable;
+
+double parse_expression(const char **expression, variable *vars, int var_count);
+double parse_term(const char **expression, variable *vars, int var_count);
+double parse_factor(const char **expression, variable *vars, int var_count);
+double parse_primary(const char **expression, variable *vars, int var_count);
+double evaluate_function(const char *name, double arg);
+double evaluate_variable(const char *name, variable *vars, int var_count);
+
 #endif // XULY_H
