@@ -17,7 +17,6 @@ char *menu[][2] = {
 };
 
 
-// Step 2: Update the print_menu function
 void print_menu(int highlight_row, int highlight_col) {
     int num_choices = sizeof(menu) / sizeof(menu[0]);
 
