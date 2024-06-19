@@ -3,6 +3,7 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include "phu.h"
 #include "xuly.h"
 #include "menu.h"
 #include "tichphan.h"
@@ -80,6 +81,11 @@ float get_input_float(char* prompt) {
 
 void handle_option_1() {
     get_input_string("Nhap f(x): ", function, sizeof(function));
+    char log_message[100];
+    sprintf(log_message, "f(x) = %s", function);
+    write_log(log_message);
+    flag2 = 0;
+    flag3 = 0;
     sleep(1);
 }
 
@@ -89,6 +95,9 @@ void handle_option_2() {
         x = get_input_float("Nhap diem can tinh: ");
         const char *expression = function;
         double result = parse_expression(&expression, vars, var_count);
+        char log_message[100];
+        sprintf(log_message, "f(%lf) = %lf", x, result);
+        write_log(log_message);
         printw("f(%lf) = %lf\n", x, result);
         refresh();
         sleep(1);
@@ -133,10 +142,12 @@ void handle_option_3() {
                     switch (sub_choice) {
                         case 1:
                             result = integrate_trap(a, b, e, expression);
+                            res_tichphan = result;
                             flag3 = 1;
                             break;
                         case 2:
                             result = integrate_simp(a, b, e, expression); // Assuming you have this function
+                            res_tichphan = result;
                             flag3 = 2;
                             break;
                     }

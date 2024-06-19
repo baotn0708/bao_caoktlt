@@ -2,8 +2,12 @@
 #include <math.h>
 #include <stdlib.h>
 #include "xuly.h"
+#include <string.h>
+#include "phu.h"
 
 #define var_count 1
+
+
 
 double trapezoidal_rule(double a, double b, double *x_values, double *y_values, int n) {
     double h = (b - a) / n;
@@ -46,6 +50,11 @@ double integrate_trap(double a, double b, double epsilon, const char* func) {
         const char* func_copy = func;
         y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
     }
+    
+    char log_message[100];
+    sprintf(log_message, "Lan thu %d:", (int)floor((log(2*num_points/3)/log(2))));
+    write_log(log_message);
+    print_table(x_values, y_values, num_points);
     double result = trapezoidal_rule(a, b, x_values, y_values, num_points);
     double old_result;
     do {
@@ -60,12 +69,17 @@ double integrate_trap(double a, double b, double epsilon, const char* func) {
             const char* func_copy = func;
             y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
         }
+        sprintf(log_message, "Lan thu %d:", (int)floor((log(2*num_points/3)/log(2))));
+        write_log(log_message);
+        print_table(x_values, y_values, num_points);
         result = trapezoidal_rule(a, b, x_values, y_values, num_points);
     } while (fabs(result - old_result) > epsilon);
+    sprintf(log_message, "Tich phan cua f(x) tren [%.2lf, %.2lf] theo phuong phap hinh thang la: %.4lf", a, b, result);
+    write_log(log_message);
 
     free(x_values);
     free(y_values);
-    
+
     return result;
 }
 double integrate_simp(double a, double b, double epsilon, const char* func) {
@@ -84,6 +98,11 @@ double integrate_simp(double a, double b, double epsilon, const char* func) {
         const char* func_copy = func;
         y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
     }
+    
+    char log_message[100];
+    sprintf(log_message, "Lan thu %d:", (int)floor((log(2*num_points/3)/log(2))));
+    write_log(log_message);
+    print_table(x_values, y_values, num_points);
     double result = simpson_rule(a, b, x_values, y_values, num_points);
     double old_result;
     do {
@@ -98,14 +117,20 @@ double integrate_simp(double a, double b, double epsilon, const char* func) {
             const char* func_copy = func;
             y_values[i] = parse_expression(&func_copy, vars, var_count);  // tính các giá trị y
         }
+        sprintf(log_message, "Lan thu %d:", (int)floor((log(2*num_points/3)/log(2))));
+        write_log(log_message);
+        print_table(x_values, y_values, num_points);
         result = simpson_rule(a, b, x_values, y_values, num_points);
     } while (fabs(result - old_result) > epsilon);
+    sprintf(log_message, "Tich phan cua f(x) tren [%.2lf, %.2lf] theo phuong phap Simpson la: %.4lf", a, b, result);
+    write_log(log_message);
 
     free(x_values);
     free(y_values);
-
+    
     return result;
 }
+
 
 // int main()
 // {
