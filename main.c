@@ -8,6 +8,7 @@ char function[100];
 double x;
 variable vars[] = {{"x", &x}};
 double a, b, e;
+int precision;
 double res_tichphan;
 int flag2 = 0, flag3 = 0;
 
@@ -69,10 +70,10 @@ int main() {
         }
         if (flag3 != 0) {
             if(flag3==1){
-                printw("Tich phan cua f(x) tren [%.2f, %.2f] voi sai so khong qua %.2f theo pp hinh thang la: %.4lf\n", a, b, e, res_tichphan);
+                printw("Tich phan cua f(x) tren [%.2f, %.2f] voi sai so khong qua %.2f theo pp hinh thang la: %.*lf\n", a, b, e, precision ,res_tichphan);
             }
             else{
-                printw("Tich phan cua f(x) tren [%.2f, %.2f] voi sai so khong qua %.2f theo pp simpson la: %.4lf\n", a, b, e, res_tichphan);
+                printw("Tich phan cua f(x) tren [%.2f, %.2f] voi sai so khong qua %.2f theo pp simpson la: %.*lf\n", a, b, e,precision, res_tichphan);
             }
             refresh();
         }

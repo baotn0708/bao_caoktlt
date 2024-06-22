@@ -7,6 +7,7 @@ extern char function[100];
 extern double x;
 extern variable vars[];
 extern double a, b, e;
+extern int precision;
 extern double res_tichphan;
 extern int flag2, flag3;
 extern void (*handlers[5][2])();

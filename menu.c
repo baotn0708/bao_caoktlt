@@ -114,6 +114,7 @@ void handle_option_3() {
         a = get_input_float("Nhap a: ");
         b = get_input_float("Nhap b: ");
         e = get_input_float("Nhap sai so: ");
+        precision = get_input_float("Nhap so chu so thap phan: ");
         const char *expression = function;
         double result;
 
@@ -141,14 +142,14 @@ void handle_option_3() {
                 case '\n':
                     switch (sub_choice) {
                         case 1:
-                            result = integrate_trap(a, b, e, expression);
-                            res_tichphan = result;
                             flag3 = 1;
+                            result = integrate(a, b, e, expression, flag3, precision); // Assuming you have this function
+                            res_tichphan = result;
                             break;
                         case 2:
-                            result = integrate_simp(a, b, e, expression); // Assuming you have this function
-                            res_tichphan = result;
                             flag3 = 2;
+                            result = integrate(a, b, e, expression, flag3, precision); // Assuming you have this function
+                            res_tichphan = result;
                             break;
                     }
                     exit_loop = true;
@@ -193,7 +194,6 @@ void reset() {
     flag2 = 0;
     flag3 = 0;
     refresh();
-
 }
 void (*handlers[5][2])() = {
     {handle_option_1, handle_option_6},
