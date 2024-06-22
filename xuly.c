@@ -104,22 +104,22 @@ double evaluate_variable(const char *name, variable *vars, int var_count) {
 // }
 
 // int main() {
-//     char expr[100];
-//     double x0;
+    // char expr[100];
+    // double x0;
 
-//     // Nhập giá trị x0 từ bàn phím
-//     printf("Nhập giá trị x0: ");
-//     scanf("%lf", &x0);
+    // // Nhập giá trị x0 từ bàn phím
+    // printf("Nhập giá trị x0: ");
+    // scanf("%lf", &x0);
 
-//     // Nhập biểu thức hàm từ bàn phím
-//     printf("Nhập biểu thức hàm f(x): ");
-//     scanf("%s", expr); 
+    // // Nhập biểu thức hàm từ bàn phím
+    // printf("Nhập biểu thức hàm f(x): ");
+    // scanf("%s", expr); 
 //     if (is_valid_expression(expr)) {
 //         printf("Biểu thức hợp lệ.\n");
 
-//         variable vars[] = {{"x", &x0}};
-//         const char *expression = expr;
-//         double result = parse_expression(&expression, vars, 1);
+        // variable vars[] = {{"x", &x0}};
+        // const char *expression = expr;
+        // double result = parse_expression(&expression, vars, 1);
 
 //         printf("f(%lf) = %lf\n", x0, result);
 //     } else {
