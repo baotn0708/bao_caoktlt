@@ -201,6 +201,9 @@ void handle_option_6() {
         if (strncmp(line, "f(x)=", 5) == 0) {
             // Sao chép phần còn lại của dòng sau "f(x) ="
             strncpy(function, line + 5, sizeof(function) - 1);
+            char message[100];
+            sprintf(message, "f(x) = %s", function);
+            write_log(message);
         } else if (strncmp(line, "a=", 2) == 0) {
             sscanf(line + 2, "%lf", &a);
             a_entered = true;
