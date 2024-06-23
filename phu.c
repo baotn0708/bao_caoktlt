@@ -37,3 +37,11 @@ void print_table(double *x_values, double *y_values, int n) {
 
     write_log(log_message);  // ghi log_message vào file log
 }
+void remove_spaces(char* s) {
+    char* d = s; // Con trỏ đích để sao chép ký tự không phải khoảng trắng
+    do {
+        while (*s == ' ') { // Bỏ qua khoảng trắng
+            s++;
+        }
+    } while ((*d++ = *s++)); // Sao chép ký tự không phải khoảng trắng và tăng con trỏ
+}

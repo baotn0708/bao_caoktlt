@@ -9,6 +9,10 @@ double x;
 variable vars[] = {{"x", &x}};
 double a, b, e;
 int precision;
+bool a_entered = false;
+bool b_entered = false;
+bool e_entered = false;
+bool precision_entered = false;
 double res_tichphan;
 int flag2 = 0, flag3 = 0;
 
@@ -61,12 +65,22 @@ int main() {
         print_menu(row, col);
         if (function[0] != '\0') { // Check if function is not empty
             printw("f(x) = %s\n", function); // Print the function
-            refresh();
+            if (a_entered){
+                printw("a = %.2lf\n", a);
+            }
+            if (b_entered){
+                printw("b = %.2lf\n", b);
+            }
+            if (e_entered){
+                printw("epsilon = %.2lf\n", e);
+            }
+            if (precision_entered){
+                printw("precision = %d\n", precision);
+            }
         }
         if (flag2 == 1) {
             const char *expression = function;
             printw("f(%.2f) = %.2f\n", x, parse_expression(&expression, vars, var_count));
-            refresh();
         }
         if (flag3 != 0) {
             if(flag3==1){
@@ -75,7 +89,7 @@ int main() {
             else{
                 printw("Tich phan cua f(x) tren [%.2f, %.2f] voi sai so khong qua %.2f theo pp simpson la: %.*lf\n", a, b, e,precision, res_tichphan);
             }
-            refresh();
         }
+        refresh();
     }
 }

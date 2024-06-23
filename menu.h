@@ -8,6 +8,7 @@ extern double x;
 extern variable vars[];
 extern double a, b, e;
 extern int precision;
+extern bool a_entered, b_entered, e_entered, precision_entered;
 extern double res_tichphan;
 extern int flag2, flag3;
 extern void (*handlers[5][2])();

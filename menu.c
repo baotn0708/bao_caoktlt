@@ -111,10 +111,22 @@ void handle_option_2() {
 
 void handle_option_3() {
     if (function[0] != '\0') {
-        a = get_input_float("Nhap a: ");
-        b = get_input_float("Nhap b: ");
-        e = get_input_float("Nhap sai so: ");
-        precision = get_input_float("Nhap so chu so thap phan: ");
+        if (!a_entered) {
+            a = get_input_float("Nhap a: ");
+            a_entered = true;
+        }
+        if (!b_entered) {
+            b = get_input_float("Nhap b: ");
+            b_entered = true;
+        }
+        if (!e_entered) {
+            e = get_input_float("Nhap sai so: ");
+            e_entered = true;
+        }
+        if (!precision_entered) {
+            precision = get_input_float("Nhap so chu so thap phan: ");
+            precision_entered = true;
+        }
         const char *expression = function;
         double result;
 
@@ -170,8 +182,10 @@ void handle_option_3() {
         sleep(1);
     }
 }
-void handle_option_6(){
+
+void handle_option_6() {
     char filename[100];
+    char line[256];
     get_input_string("Nhap ten file: ", filename, sizeof(filename));
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -180,9 +194,28 @@ void handle_option_6(){
         sleep(1);
         return;
     }
-    fgets(function, sizeof(function), file);
+    while (fgets(line, sizeof(line), file) != NULL) {
+        // Loại bỏ ký tự xuống dòng cuối cùng nếu có
+        line[strcspn(line, "\n")] = 0;
+        remove_spaces(line);
+        if (strncmp(line, "f(x)=", 5) == 0) {
+            // Sao chép phần còn lại của dòng sau "f(x) ="
+            strncpy(function, line + 5, sizeof(function) - 1);
+        } else if (strncmp(line, "a=", 2) == 0) {
+            sscanf(line + 2, "%lf", &a);
+            a_entered = true;
+        } else if (strncmp(line, "b=", 2) == 0) {
+            sscanf(line + 2, "%lf", &b);
+            b_entered = true;
+        } else if (strncmp(line, "e=", 2) == 0) {
+            sscanf(line + 2, "%lf", &e);
+            e_entered = true;
+        } else if (strncmp(line, "precision=", 10) == 0) {
+            sscanf(line + 10, "%d", &precision);
+            precision_entered = true;
+        }
+    }
     fclose(file);
-    return;
 }
 void exit_program() {
     endwin();
@@ -193,6 +226,9 @@ void reset() {
     function[0] = '\0';
     flag2 = 0;
     flag3 = 0;
+    a_entered = false;
+    b_entered = false;
+    e_entered = false;
     refresh();
 }
 void (*handlers[5][2])() = {
